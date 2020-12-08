@@ -48,7 +48,7 @@ export const CreateAccount = () => {
       createAccount: { ok },
     } = data;
     if (ok) {
-      history.push("/login");
+      history.push("/");
     }
   };
 
@@ -146,7 +146,7 @@ export const CreateAccount = () => {
         <div>
           <h5 className="pt-4 font-light">
             Already use Nuber?{" "}
-            <Link to="/login" className="text-lime-600  hover:underline">
+            <Link to="/" className="text-lime-600  hover:underline">
               Log in
             </Link>{" "}
           </h5>
