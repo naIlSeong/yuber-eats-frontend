@@ -1,7 +1,8 @@
-import { gql, useMutation } from "@apollo/client";
 import React from "react";
+import Helmet from "react-helmet";
+import { gql, useMutation } from "@apollo/client";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Button } from "../components/button";
 import { FormError } from "../components/form-error";
 import yuberLogo from "../images/logo.svg";
@@ -9,6 +10,7 @@ import {
   loginMutation,
   loginMutationVariables,
 } from "../__generated__/loginMutation";
+import { isLoggedInVar } from "../apollo";
 
 const LOGIN_MUTATION = gql`
   mutation loginMutation($LoginInput: LoginInput!) {
@@ -36,12 +38,17 @@ export const Login = () => {
     mode: "onChange",
   });
 
+  const history = useHistory();
+
   const onCompleted = (data: loginMutation) => {
     const {
       login: { ok, token },
     } = data;
     if (ok) {
       console.log(token);
+      // Save Token
+      isLoggedInVar(true);
+      history.push("/");
     }
   };
 
@@ -66,6 +73,9 @@ export const Login = () => {
 
   return (
     <div className=" h-screen flex flex-col items-center mt-8 lg:mt-24">
+      <Helmet>
+        <title>Login | Yuber Eats</title>
+      </Helmet>
       <div className="w-full max-w-screen-sm flex flex-col px-5 items-center">
         <img src={yuberLogo} alt="logo" className="w-48 mb-10 lg:mb-16" />
         <h4 className="text-gray-800 text-3xl w-full ">Welcome Back</h4>
@@ -76,6 +86,7 @@ export const Login = () => {
           <input
             ref={register({
               required: "Email is required",
+              pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             })}
             name="email"
             type="email"
@@ -85,6 +96,9 @@ export const Login = () => {
           />
           {errors.email?.message && (
             <FormError errorMessage={errors.email.message} />
+          )}
+          {errors.email?.type === "pattern" && (
+            <FormError errorMessage={"Invalid email"} />
           )}
           <input
             ref={register({
