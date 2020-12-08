@@ -1,15 +1,40 @@
+import { gql, useMutation } from "@apollo/client";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { FormError } from "../components/form-error";
+import {
+  loginMutation,
+  loginMutationVariables,
+} from "../__generated__/loginMutation";
+
+const LOGIN_MUTATION = gql`
+  mutation loginMutation($email: String!, $password: String!) {
+    login(input: { email: $email, password: $password }) {
+      ok
+      error
+      token
+    }
+  }
+`;
 
 interface IForm {
-  email?: string;
-  password?: string;
+  email: string;
+  password: string;
 }
 
 export const Login = () => {
   const { register, getValues, errors, handleSubmit } = useForm<IForm>();
+  const [loginMutation] = useMutation<loginMutation, loginMutationVariables>(
+    LOGIN_MUTATION
+  );
   const onSubmit = () => {
-    console.log(getValues());
+    const { email, password } = getValues();
+    loginMutation({
+      variables: {
+        email,
+        password,
+      },
+    });
   };
 
   return (
@@ -31,9 +56,7 @@ export const Login = () => {
             className="input"
           />
           {errors.email?.message && (
-            <span className="font-medium text-red-600">
-              {errors.email.message}
-            </span>
+            <FormError errorMessage={errors.email.message} />
           )}
           <input
             ref={register({
@@ -47,14 +70,12 @@ export const Login = () => {
             className="input"
           />
           {errors.password?.message && (
-            <span className="font-medium text-red-600">
-              {errors.password?.message}
-            </span>
+            <FormError errorMessage={errors.password?.message} />
           )}
           {errors.password?.type === "minLength" && (
-            <span className="font-medium text-red-600">
-              Password can be more than or equal 8 chars
-            </span>
+            <FormError
+              errorMessage={"Password can be more than or equal 8 chars"}
+            />
           )}
           <button className="btn">Log In</button>
         </form>
