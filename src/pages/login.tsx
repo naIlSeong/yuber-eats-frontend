@@ -8,8 +8,8 @@ import {
 } from "../__generated__/loginMutation";
 
 const LOGIN_MUTATION = gql`
-  mutation loginMutation($email: String!, $password: String!) {
-    login(input: { email: $email, password: $password }) {
+  mutation loginMutation($LoginInput: LoginInput!) {
+    login(input: $LoginInput) {
       ok
       error
       token
@@ -24,17 +24,33 @@ interface IForm {
 
 export const Login = () => {
   const { register, getValues, errors, handleSubmit } = useForm<IForm>();
-  const [loginMutation] = useMutation<loginMutation, loginMutationVariables>(
-    LOGIN_MUTATION
-  );
+
+  const onCompleted = (data: loginMutation) => {
+    const {
+      login: { ok, token },
+    } = data;
+    if (ok) {
+      console.log(token);
+    }
+  };
+
+  const [loginMutation, { data: loginMutationOutput, loading }] = useMutation<
+    loginMutation,
+    loginMutationVariables
+  >(LOGIN_MUTATION, { onCompleted });
+
   const onSubmit = () => {
-    const { email, password } = getValues();
-    loginMutation({
-      variables: {
-        email,
-        password,
-      },
-    });
+    if (!loading) {
+      const { email, password } = getValues();
+      loginMutation({
+        variables: {
+          LoginInput: {
+            email,
+            password,
+          },
+        },
+      });
+    }
   };
 
   return (
@@ -77,7 +93,10 @@ export const Login = () => {
               errorMessage={"Password can be more than or equal 8 chars"}
             />
           )}
-          <button className="btn">Log In</button>
+          <button className="btn">{loading ? "Loading..." : "Log In"}</button>
+          {loginMutationOutput?.login.error && (
+            <FormError errorMessage={loginMutationOutput.login.error} />
+          )}
         </form>
       </div>
     </div>
