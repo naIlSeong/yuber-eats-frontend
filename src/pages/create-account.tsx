@@ -54,7 +54,7 @@ export const CreateAccount = () => {
 
   const [
     createAccountMutation,
-    { data: createAccountMutationOutput, loading },
+    { data: createAccountOutput, loading },
   ] = useMutation<createAccount, createAccountVariables>(CREATE_ACCOUNT, {
     onCompleted,
   });
@@ -136,10 +136,8 @@ export const CreateAccount = () => {
             loading={loading}
             actionText={"Create Account"}
           />
-          {createAccountMutationOutput?.createAccount.error && (
-            <FormError
-              errorMessage={createAccountMutationOutput.createAccount.error}
-            />
+          {createAccountOutput?.createAccount.error && (
+            <FormError errorMessage={createAccountOutput.createAccount.error} />
           )}
         </form>
         <div>

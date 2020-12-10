@@ -50,7 +50,7 @@ export const Login = () => {
     }
   };
 
-  const [loginMutation, { data: loginMutationOutput, loading }] = useMutation<
+  const [loginMutation, { data: loginOutput, loading }] = useMutation<
     login,
     loginVariables
   >(LOGIN, { onCompleted });
@@ -122,8 +122,8 @@ export const Login = () => {
             loading={loading}
             actionText={"Login"}
           />
-          {loginMutationOutput?.login.error && (
-            <FormError errorMessage={loginMutationOutput.login.error} />
+          {loginOutput?.login.error && (
+            <FormError errorMessage={loginOutput.login.error} />
           )}
         </form>
         <div>
