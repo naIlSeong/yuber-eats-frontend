@@ -8,13 +8,13 @@ import { FormError } from "../components/form-error";
 import yuberLogo from "../images/logo.svg";
 import { UserRole } from "../__generated__/globalTypes";
 import {
-  createAccountMutation,
-  createAccountMutationVariables,
-} from "../__generated__/createAccountMutation";
+  createAccount,
+  createAccountVariables,
+} from "../__generated__/createAccount";
 
-const CREATE_ACCOUNT_MUTATION = gql`
-  mutation createAccountMutation($CreateAccountInput: CreateAccountInput!) {
-    createAccount(input: $CreateAccountInput) {
+const CREATE_ACCOUNT = gql`
+  mutation createAccount($input: CreateAccountInput!) {
+    createAccount(input: $input) {
       ok
       error
     }
@@ -43,7 +43,7 @@ export const CreateAccount = () => {
 
   const history = useHistory();
 
-  const onCompleted = (data: createAccountMutation) => {
+  const onCompleted = (data: createAccount) => {
     const {
       createAccount: { ok },
     } = data;
@@ -55,17 +55,16 @@ export const CreateAccount = () => {
   const [
     createAccountMutation,
     { data: createAccountMutationOutput, loading },
-  ] = useMutation<createAccountMutation, createAccountMutationVariables>(
-    CREATE_ACCOUNT_MUTATION,
-    { onCompleted }
-  );
+  ] = useMutation<createAccount, createAccountVariables>(CREATE_ACCOUNT, {
+    onCompleted,
+  });
 
   const onSubmit = () => {
     const { email, password, role } = getValues();
     if (!loading) {
       createAccountMutation({
         variables: {
-          CreateAccountInput: {
+          input: {
             email,
             password,
             role,

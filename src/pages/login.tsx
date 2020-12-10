@@ -6,16 +6,13 @@ import { Link, useHistory } from "react-router-dom";
 import { Button } from "../components/button";
 import { FormError } from "../components/form-error";
 import yuberLogo from "../images/logo.svg";
-import {
-  loginMutation,
-  loginMutationVariables,
-} from "../__generated__/loginMutation";
 import { authTokenVar, isLoggedInVar } from "../apollo";
 import { LOCALSTORAGE_TOKEN } from "../constant";
+import { login, loginVariables } from "../__generated__/login";
 
-const LOGIN_MUTATION = gql`
-  mutation loginMutation($LoginInput: LoginInput!) {
-    login(input: $LoginInput) {
+const LOGIN = gql`
+  mutation login($input: LoginInput!) {
+    login(input: $input) {
       ok
       error
       token
@@ -41,7 +38,7 @@ export const Login = () => {
 
   const history = useHistory();
 
-  const onCompleted = (data: loginMutation) => {
+  const onCompleted = (data: login) => {
     const {
       login: { ok, token },
     } = data;
@@ -54,16 +51,16 @@ export const Login = () => {
   };
 
   const [loginMutation, { data: loginMutationOutput, loading }] = useMutation<
-    loginMutation,
-    loginMutationVariables
-  >(LOGIN_MUTATION, { onCompleted });
+    login,
+    loginVariables
+  >(LOGIN, { onCompleted });
 
   const onSubmit = () => {
     if (!loading) {
       const { email, password } = getValues();
       loginMutation({
         variables: {
-          LoginInput: {
+          input: {
             email,
             password,
           },
