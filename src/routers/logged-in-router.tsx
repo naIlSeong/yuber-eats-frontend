@@ -1,34 +1,18 @@
 import React from "react";
-import { gql, useQuery } from "@apollo/client";
-import { meQuery } from "../__generated__/meQuery";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Restaurants } from "../pages/client/restaurants";
 import { NotFound } from "../pages/404";
+import { Header } from "../components/header";
+import { useMe } from "../hooks/useMe";
 
-const ClientRoutes = () => (
-  <>
-    <Route path="/" exact>
-      <Restaurants />
-    </Route>
-    <Route>
-      <NotFound />
-    </Route>
-  </>
-);
-
-const ME_QUERY = gql`
-  query meQuery {
-    me {
-      id
-      email
-      role
-      verified
-    }
-  }
-`;
+const ClientRoutes = () => [
+  <Route path="/" exact>
+    <Restaurants />
+  </Route>,
+];
 
 export const LoggedInRouter = () => {
-  const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
+  const { data, loading, error } = useMe();
   if (!data || loading || error) {
     return (
       <div>
@@ -41,7 +25,13 @@ export const LoggedInRouter = () => {
 
   return (
     <Router>
-      <Switch>{data.me.role === "Client" && <ClientRoutes />}</Switch>
+      <Header />
+      <Switch>
+        {data.me.role === "Client" && ClientRoutes}
+        <Route>
+          <NotFound />
+        </Route>
+      </Switch>
     </Router>
   );
 };
