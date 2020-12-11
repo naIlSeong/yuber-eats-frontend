@@ -4,6 +4,7 @@ import {
   restaurantsQuery,
   restaurantsQueryVariables,
 } from "../../__generated__/restaurantsQuery";
+import { Restaurant } from "../../components/restaurant";
 
 const RESTAURANTS = gql`
   query restaurantsQuery($input: AllRestaurantsInput!) {
@@ -71,6 +72,15 @@ export const Restaurants = () => {
                 ></div>
                 <div className="text-center pt-2 text-lg">{category.name}</div>
               </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-3 gap-x-5 gap-y-10 mx-6 mt-10">
+            {data?.allRestaurants.restaurants?.map((restaurant) => (
+              <Restaurant
+                coverImg={restaurant.coverImg}
+                restaurantName={restaurant.name}
+                categoryName={restaurant.category?.name}
+              />
             ))}
           </div>
         </div>
