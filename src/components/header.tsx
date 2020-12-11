@@ -21,7 +21,7 @@ export const Header: React.FC = () => {
             <img src={yuberLogo} alt="logo" className=" w-36" />
           </Link>
           <span>
-            <Link to="/my-profile">
+            <Link to="/edit-profile">
               <FontAwesomeIcon icon={faUser} className="text-xl" />
             </Link>
           </span>
