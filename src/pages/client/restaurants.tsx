@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import {
   restaurantsQuery,
@@ -39,16 +39,20 @@ const RESTAURANTS = gql`
 `;
 
 export const Restaurants = () => {
+  const [page, setPage] = useState(1);
   const { data, loading } = useQuery<
     restaurantsQuery,
     restaurantsQueryVariables
   >(RESTAURANTS, {
     variables: {
       input: {
-        page: 1,
+        page,
       },
     },
   });
+
+  const onNextClick = () => setPage((current) => current + 1);
+  const onPrevClick = () => setPage((current) => current - 1);
 
   return (
     <div>
@@ -60,7 +64,7 @@ export const Restaurants = () => {
         />
       </form>
       {!loading && (
-        <div className="max-w-screen-2xl mx-auto mt-8">
+        <div className="max-w-screen-2xl mx-auto my-8">
           <div className="flex justify-around max-w-screen-2xl mx-auto">
             {data?.allCategories.categories?.map((category) => (
               <div className="cursor-pointer">
@@ -74,14 +78,40 @@ export const Restaurants = () => {
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-3 gap-x-5 gap-y-10 mx-6 mt-10">
+          <div className="grid grid-cols-3 gap-x-5 gap-y-10 mx-6 mb-8 mt-16">
             {data?.allRestaurants.restaurants?.map((restaurant) => (
               <Restaurant
+                id={restaurant.id + ""}
                 coverImg={restaurant.coverImg}
                 restaurantName={restaurant.name}
                 categoryName={restaurant.category?.name}
               />
             ))}
+          </div>
+          <div className="flex justify-center">
+            {page > 1 ? (
+              <button
+                className="text-2xl font-medium hover:bg-lime-400 rounded-full focus:outline-none w-8 h-8 "
+                onClick={onPrevClick}
+              >
+                &larr;
+              </button>
+            ) : (
+              <div className="w-8" />
+            )}
+            <span className="text-xl mx-3 w-32 text-center">
+              Page {page} of {data?.allRestaurants.totalPages}
+            </span>
+            {page !== data?.allRestaurants.totalPages ? (
+              <button
+                className="text-2xl font-medium hover:bg-lime-400 rounded-full focus:outline-none w-8 h-8 "
+                onClick={onNextClick}
+              >
+                &rarr;
+              </button>
+            ) : (
+              <div className="w-8" />
+            )}
           </div>
         </div>
       )}
