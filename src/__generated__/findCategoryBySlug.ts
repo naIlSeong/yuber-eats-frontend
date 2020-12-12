@@ -21,6 +21,7 @@ export interface findCategoryBySlug_findCategoryBySlug_category {
 export interface findCategoryBySlug_findCategoryBySlug_restaurants_category {
   __typename: "Category";
   name: string;
+  slug: string;
 }
 
 export interface findCategoryBySlug_findCategoryBySlug_restaurants {

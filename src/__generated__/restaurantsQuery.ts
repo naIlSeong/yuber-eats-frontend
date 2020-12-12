@@ -28,6 +28,7 @@ export interface restaurantsQuery_allCategories {
 export interface restaurantsQuery_allRestaurants_restaurants_category {
   __typename: "Category";
   name: string;
+  slug: string;
 }
 
 export interface restaurantsQuery_allRestaurants_restaurants {
