@@ -5,6 +5,10 @@ import {
   restaurantsQueryVariables,
 } from "../../__generated__/restaurantsQuery";
 import { Restaurant } from "../../components/restaurant";
+import { useForm } from "react-hook-form";
+import { useHistory } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { RESTAURANT_FRAGMENT } from "../../fragment";
 
 const RESTAURANTS = gql`
   query restaurantsQuery($input: AllRestaurantsInput!) {
@@ -25,18 +29,16 @@ const RESTAURANTS = gql`
       totalPages
       totalResults
       restaurants {
-        id
-        name
-        coverImg
-        category {
-          name
-        }
-        address
-        isPromoted
+        ...RestaurantParts
       }
     }
   }
+  ${RESTAURANT_FRAGMENT}
 `;
+
+interface IForm {
+  searchTerm: string;
+}
 
 export const Restaurants = () => {
   const [page, setPage] = useState(1);
@@ -53,13 +55,31 @@ export const Restaurants = () => {
 
   const onNextClick = () => setPage((current) => current + 1);
   const onPrevClick = () => setPage((current) => current - 1);
+  const { register, handleSubmit, getValues } = useForm<IForm>();
+  const history = useHistory();
+
+  const onSearchTerm = () => {
+    const { searchTerm } = getValues();
+    history.push({
+      pathname: "search",
+      search: `?term=${searchTerm}`,
+    });
+  };
 
   return (
     <div>
-      <form className="w-full flex flex-col justify-center items-center bg-gray-800 py-36">
+      <Helmet>
+        <title>Home | Yuber Eats</title>
+      </Helmet>
+      <form
+        onSubmit={handleSubmit(onSearchTerm)}
+        className="w-full flex flex-col justify-center items-center bg-gray-800 py-36"
+      >
         <input
+          ref={register({ required: true, min: 3 })}
+          name="searchTerm"
           type="Search"
-          className="input w-5/12 rounded-sm"
+          className="input w-3/4 lg:w-5/12 rounded-sm"
           placeholder="Search Restuarant..."
         />
       </form>
@@ -67,20 +87,23 @@ export const Restaurants = () => {
         <div className="max-w-screen-2xl mx-auto my-8">
           <div className="flex justify-around max-w-screen-2xl mx-auto">
             {data?.allCategories.categories?.map((category) => (
-              <div className="cursor-pointer">
+              <div className="cursor-pointer" key={category.id}>
                 <div
-                  className="w-40 h-40 bg-cover rounded-full"
+                  className="w-16 md:w-28 lg:w-40 h-16 md:h-28 lg:h-40 bg-cover rounded-full"
                   style={{
                     backgroundImage: `url(${category.coverImg})`,
                   }}
                 ></div>
-                <div className="text-center pt-2 text-lg">{category.name}</div>
+                <div className="text-center pt-2 w-16 text-sm md:w-28 md:text-lg lg:w-40 lg:text-lg">
+                  {category.name}
+                </div>
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-3 gap-x-5 gap-y-10 mx-6 mb-8 mt-16">
+          <div className="grid lg:grid-cols-3 gap-x-5 gap-y-10 mx-6 mb-8 mt-16">
             {data?.allRestaurants.restaurants?.map((restaurant) => (
               <Restaurant
+                key={restaurant.id}
                 id={restaurant.id + ""}
                 coverImg={restaurant.coverImg}
                 restaurantName={restaurant.name}
