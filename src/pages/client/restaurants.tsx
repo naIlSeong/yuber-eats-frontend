@@ -6,9 +6,9 @@ import {
 } from "../../__generated__/restaurantsQuery";
 import { Restaurant } from "../../components/restaurant";
 import { useForm } from "react-hook-form";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { RESTAURANT_FRAGMENT } from "../../fragment";
+import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragment";
 
 const RESTAURANTS = gql`
   query restaurantsQuery($input: AllRestaurantsInput!) {
@@ -16,11 +16,7 @@ const RESTAURANTS = gql`
       ok
       error
       categories {
-        id
-        name
-        coverImg
-        slug
-        countRestaurant
+        ...CategoryParts
       }
     }
     allRestaurants(input: $input) {
@@ -33,6 +29,7 @@ const RESTAURANTS = gql`
       }
     }
   }
+  ${CATEGORY_FRAGMENT}
   ${RESTAURANT_FRAGMENT}
 `;
 
@@ -87,17 +84,19 @@ export const Restaurants = () => {
         <div className="max-w-screen-2xl mx-auto my-8">
           <div className="flex justify-around max-w-screen-2xl mx-auto">
             {data?.allCategories.categories?.map((category) => (
-              <div className="cursor-pointer" key={category.id}>
-                <div
-                  className="w-16 md:w-28 lg:w-40 h-16 md:h-28 lg:h-40 bg-cover rounded-full"
-                  style={{
-                    backgroundImage: `url(${category.coverImg})`,
-                  }}
-                ></div>
-                <div className="text-center pt-2 w-16 text-sm md:w-28 md:text-lg lg:w-40 lg:text-lg">
-                  {category.name}
+              <Link to={`/category/${category.slug}`}>
+                <div className="cursor-pointer" key={category.id}>
+                  <div
+                    className="w-16 md:w-28 lg:w-40 h-16 md:h-28 lg:h-40 bg-cover rounded-full"
+                    style={{
+                      backgroundImage: `url(${category.coverImg})`,
+                    }}
+                  ></div>
+                  <div className="text-center pt-2 w-16 text-sm md:w-28 md:text-lg lg:w-40 lg:text-lg">
+                    {category.name}
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
           <div className="grid lg:grid-cols-3 gap-x-5 gap-y-10 mx-6 mb-8 mt-16">
