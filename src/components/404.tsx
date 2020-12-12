@@ -2,18 +2,28 @@ import React from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 
-export const NotFound = () => {
+interface INotFound {
+  title: string;
+  notFoundText: string;
+  message: string;
+}
+
+export const NotFound: React.FC<INotFound> = ({
+  title,
+  notFoundText,
+  message,
+}) => {
   return (
-    <div className="mt-52 flex flex-col justify-center items-center">
+    <div className="mt-24 flex flex-col justify-center items-center">
       <Helmet>
-        <title>Not Found | Yuber Eats</title>
+        <title>{title} | Yuber Eats</title>
       </Helmet>
       <h1 className="text-9xl font-bold tracking-wide">404</h1>
       <h4 className="text-3xl font-semibold pb-6 tracking-wide">
-        Not Found :(
+        {notFoundText}
       </h4>
       <h6 className="py-2">
-        Sorry, but the page you are looking for is not found.{" "}
+        Sorry, but the {message} you are looking for is not found.{" "}
       </h6>
       <Link to="/" className="text-lime-600 hover:underline">
         Home &rarr;

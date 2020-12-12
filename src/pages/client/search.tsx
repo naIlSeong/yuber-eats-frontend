@@ -7,6 +7,8 @@ import {
   searchRestaurantVariables,
 } from "../../__generated__/searchRestaurant";
 import { RESTAURANT_FRAGMENT } from "../../fragment";
+import { Restaurant } from "../../components/restaurant";
+import { NotFound } from "../../components/404";
 
 const SEARCH_RESTAURANT = gql`
   query searchRestaurant($input: SearchRestaurantInput!) {
@@ -27,13 +29,13 @@ export const Search = () => {
   const location = useLocation();
   const history = useHistory();
 
-  const [callQuery, { data, loading }] = useLazyQuery<
+  const [callQuery, { data }] = useLazyQuery<
     searchRestaurant,
     searchRestaurantVariables
   >(SEARCH_RESTAURANT);
 
+  const [_, query] = location.search.split("?term=");
   useEffect(() => {
-    const [_, query] = location.search.split("?term=");
     if (!query) {
       return history.replace("/");
     }
@@ -45,15 +47,37 @@ export const Search = () => {
         },
       },
     });
-  }, [history, location]);
-  console.log(data);
+  }, [history]);
 
   return (
     <div>
       <Helmet>
         <title>Search | Yuber Eats</title>
       </Helmet>
-      Search!!!
+      <div className="max-w-screen-2xl my-8 mx-6">
+        <div className="text-gray-800 text-3xl w-full">
+          Result of <span className="font-semibold">{query}</span>
+        </div>
+        {data?.searchRestaurant.restaurants?.length !== 0 ? (
+          <div className="grid lg:grid-cols-3 gap-x-5 gap-y-10  mb-8 mt-16">
+            {data?.searchRestaurant.restaurants?.map((restaurant) => (
+              <Restaurant
+                key={restaurant.id}
+                id={restaurant.id + ""}
+                coverImg={restaurant.coverImg}
+                restaurantName={restaurant.name}
+                categoryName={restaurant.category?.name}
+              />
+            ))}
+          </div>
+        ) : (
+          <NotFound
+            title="Search"
+            notFoundText={`"${query}" Not Found :(`}
+            message="restaurant"
+          />
+        )}
+      </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { NotFound } from "../pages/404";
+import { NotFound } from "../components/404";
 import { CreateAccount } from "../pages/create-account";
 import { Login } from "../pages/login";
 
@@ -15,7 +15,11 @@ export const LoggedOutRouter = () => {
           <Login />
         </Route>
         <Route>
-          <NotFound />
+          <NotFound
+            title="Not Found"
+            notFoundText="Not Found :("
+            message="page"
+          />
         </Route>
       </Switch>
     </Router>

@@ -6,7 +6,9 @@ import {
   findCategoryBySlug,
   findCategoryBySlugVariables,
 } from "../../__generated__/findCategoryBySlug";
-import { useHistory, useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { Restaurant } from "../../components/restaurant";
+import { NotFound } from "../../components/404";
 
 const FIND_CATEGORY = gql`
   query findCategoryBySlug($input: CategoryInput!) {
@@ -32,9 +34,7 @@ interface IParams {
 }
 
 export const Category = () => {
-  const location = useLocation();
   const params = useParams<IParams>();
-  const history = useHistory();
 
   const [callQuery, { data }] = useLazyQuery<
     findCategoryBySlug,
@@ -51,14 +51,39 @@ export const Category = () => {
       },
     });
   }, [params]);
-  console.log(data);
 
   return (
     <div>
       <Helmet>
         <title>Category | Yuber Eats</title>
       </Helmet>
-      {data?.findCategoryBySlug.category?.name}
+      <div className="max-w-screen-2xl my-8 mx-6">
+        <div className="text-gray-800 text-3xl w-full">
+          Category of{" "}
+          <span className="font-semibold">
+            {data?.findCategoryBySlug.category?.name}
+          </span>
+        </div>
+        {data?.findCategoryBySlug.restaurants?.length !== 0 ? (
+          <div className="grid lg:grid-cols-3 gap-x-5 gap-y-10  mb-8 mt-16">
+            {data?.findCategoryBySlug.restaurants?.map((restaurant) => (
+              <Restaurant
+                key={restaurant.id}
+                id={restaurant.id + ""}
+                coverImg={restaurant.coverImg}
+                restaurantName={restaurant.name}
+                categoryName={restaurant.category?.name}
+              />
+            ))}
+          </div>
+        ) : (
+          <NotFound
+            title="Category"
+            notFoundText={`"${data.findCategoryBySlug.category?.name}" Not Found :(`}
+            message="restaurant of category"
+          />
+        )}
+      </div>
     </div>
   );
 };
